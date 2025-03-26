@@ -42,10 +42,10 @@ const AuthForm = ({ type }: { type: FormType }) => {
         try {
             if (type === "sign-up") {
                 toast.success("Account created successfully! Please Sign In.");
-                router.push('/sign-in');
+                router.push("/sign-in");
             } else {
                 toast.success("Sign in successfully.");
-                router.push('/');
+                router.push("/");
             }
         } catch (error) {
             console.log(error);
@@ -64,6 +64,32 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 </div>
                 <h3>Practice job interview with AI</h3>
 
+                {/* For 3rd party auth */}
+                <Button
+                    className="btn-social btn-google"
+                    onClick={() => console.log("Google Auth")}
+                >
+                    <Image
+                        src="/google-logo.svg"
+                        alt="Google Logo"
+                        height={20}
+                        width={20}
+                    />
+                    {isSignIn ? "Sign In" : "Sign Up"} with Google
+                </Button>
+                <Button
+                    className="btn-social btn-github"
+                    onClick={() => console.log("GitHub Auth")}
+                >
+                    <Image
+                        src="/github-logo.svg"
+                        alt="Github Logo"
+                        height={20}
+                        width={20}
+                    />
+                    {isSignIn ? "Sign In" : "Sign Up"} with GitHub
+                </Button>
+
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
@@ -78,19 +104,19 @@ const AuthForm = ({ type }: { type: FormType }) => {
                             />
                         )}
                         <FormField
-                                control={form.control}
-                                name="email"
-                                label="Email"
-                                placeholder="Your Email Address"
-                                type="email"
-                            />
+                            control={form.control}
+                            name="email"
+                            label="Email"
+                            placeholder="Your Email Address"
+                            type="email"
+                        />
                         <FormField
-                                control={form.control}
-                                name="password"
-                                label="Password"
-                                placeholder="Enter your password"
-                                type="password"
-                            />
+                            control={form.control}
+                            name="password"
+                            label="Password"
+                            placeholder="Enter your password"
+                            type="password"
+                        />
                         <Button className="btn" type="submit">
                             {isSignIn ? "Sign In" : "Create an Account"}
                         </Button>

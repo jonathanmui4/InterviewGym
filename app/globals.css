@@ -159,6 +159,20 @@
 }
 
 @layer components {
+  .btn-social {
+    @apply !w-full !flex !items-center !justify-center !gap-2 
+           !text-dark-100 !font-bold !rounded-full !min-h-10 
+           !px-5 cursor-pointer transition-all;
+  }
+  
+  .btn-google {
+    @apply !border !border-gray-300 !bg-white hover:!bg-gray-200;
+  }
+  
+  .btn-github {
+    @apply !bg-gray-100 !text-black hover:!bg-gray-200;
+  }
+
   .btn-call {
     @apply inline-block px-7 py-3 font-bold text-sm leading-5 text-white transition-colors duration-150 bg-success-100 border border-transparent rounded-full shadow-sm focus:outline-none focus:shadow-2xl active:bg-success-200 hover:bg-success-200 min-w-28 cursor-pointer items-center justify-center overflow-visible;
 
