@@ -14,10 +14,13 @@ import { toast } from "sonner";
 import FormField from "./FormField";
 import { useRouter } from "next/navigation";
 
-import { auth } from "@/firebase/client";
+import { auth, googleProvider, githubProvider } from "@/firebase/client";
 import {
     createUserWithEmailAndPassword,
+    GoogleAuthProvider,
+    GithubAuthProvider,
     signInWithEmailAndPassword,
+    signInWithPopup,
 } from "firebase/auth";
 import { signIn, signUp } from "@/lib/actions/auth.action";
 
@@ -30,8 +33,10 @@ const authFormSchema = (type: FormType) => {
 };
 
 const AuthForm = ({ type }: { type: FormType }) => {
+    const isSignIn = type === "sign-in";
     const router = useRouter();
     const formSchema = authFormSchema(type);
+
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -54,14 +59,16 @@ const AuthForm = ({ type }: { type: FormType }) => {
                     email,
                     password
                 );
-                console.log("Sign up user credentials: ", userCredentials);
+
                 const result = await signUp({
                     uid: userCredentials.user.uid,
                     name: name!,
                     email: email,
                     password: password,
+                    photoUrl: userCredentials.user.photoURL,
+                    providerId: userCredentials.providerId,
                 });
-                console.log("Sign up result: ", result);
+
                 if (!result.success) {
                     toast.error(result.message);
                     return;
@@ -71,6 +78,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 router.push("/sign-in");
             } else {
                 const { email, password } = values;
+                const isSocial = false;
                 const userCredential = await signInWithEmailAndPassword(
                     auth,
                     email,
@@ -86,6 +94,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 await signIn({
                     email,
                     idToken,
+                    isSocial,
                 });
 
                 toast.success("Sign in successfully.");
@@ -97,7 +106,35 @@ const AuthForm = ({ type }: { type: FormType }) => {
         }
     }
 
-    const isSignIn = type === "sign-in";
+    const handleSocialSignIn = async (
+        provider: GoogleAuthProvider | GithubAuthProvider
+    ) => {
+        try {
+            const isSocial = true;
+            const result = await signInWithPopup(auth, provider);
+            const idToken = await result.user.getIdToken();
+            const email = result.user.email;
+            const name = result.user.displayName;
+            const photoUrl = result.user.photoURL;
+            const providerId = result.providerId;
+
+            if (!idToken || !email) {
+                toast.error("Authentication failed");
+                return;
+            }
+
+            // Send ID token to backend for verification & session handling
+            await signIn({ email, idToken, isSocial, name, photoUrl, providerId });
+
+            toast.success(
+                `${isSignIn ? "Signed in" : "Signed up"} successfully.`
+            );
+            router.push("/");
+        } catch (error) {
+            console.error("Error with social sign-in:", error);
+            toast.error("Account with same email address exists");
+        }
+    };
 
     return (
         <div className="card-border lg:min-w-[566px]">
@@ -111,7 +148,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 {/* For 3rd party auth */}
                 <Button
                     className="btn-social btn-google"
-                    onClick={() => console.log("Sign in google")}
+                    onClick={() => handleSocialSignIn(googleProvider)}
                 >
                     <Image
                         src="/google-logo.svg"
@@ -123,7 +160,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 </Button>
                 <Button
                     className="btn-social btn-github"
-                    onClick={() => console.log("Sign in github")}
+                    onClick={() => handleSocialSignIn(githubProvider)}
                 >
                     <Image
                         src="/github-logo.svg"

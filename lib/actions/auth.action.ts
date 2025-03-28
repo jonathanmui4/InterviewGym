@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 const EXPIRY_TIME = 60 * 60 * 24 * 7 * 1000; // 1 week
 
 export async function signUp(params: SignUpParams) {
-    const { uid, name, email } = params;
+    const { uid, name, email, photoUrl, providerId } = params;
 
     try {
         // Trying to fetch user by entering collection, getting document of uid
@@ -20,8 +20,11 @@ export async function signUp(params: SignUpParams) {
         }
 
         await db.collection("users").doc(uid).set({
-            name,
-            email,
+            name: name,
+            email: email,
+            photoURL: photoUrl || "",
+            provider: providerId || "unknown",
+            createdAt: new Date(),
         });
 
         return {
@@ -46,10 +49,25 @@ export async function signUp(params: SignUpParams) {
 }
 
 export async function signIn(params: SignInParams) {
-    const { email, idToken } = params;
+    const { email, idToken, isSocial, name, photoUrl, providerId } = params;
 
     try {
         const userRecord = await auth.getUserByEmail(email);
+
+        if (isSocial) {
+            // Trying to fetch user by entering collection, getting document of uid
+            const userRecordDb = await db.collection("users").doc(userRecord.uid).get();
+
+            if (!userRecordDb.exists) {
+                await db.collection("users").doc(userRecord.uid).set({
+                    name: name,
+                    email: email,
+                    photoUrl: photoUrl || "",
+                    provider: providerId || "unknown",
+                    createdAt: new Date(),
+                });
+            }  
+        }
 
         if (!userRecord) {
             return {
@@ -59,6 +77,7 @@ export async function signIn(params: SignInParams) {
         }
 
         await setSessionCookie(idToken);
+        return { success: true, message: "Signed in successfully" };
     } catch (e: any) {
         console.log("Error Signing In", e);
 
