@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 interface Feedback {
   id: string;
   interviewId: string;
@@ -35,6 +37,9 @@ interface CreateFeedbackParams {
 interface User {
   name: string;
   email: string;
+  photoUrl: string;
+  provider: string;
+  createdAt: Timestamp;
   id: string;
 }
 

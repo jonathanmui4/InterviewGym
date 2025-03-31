@@ -1,6 +1,7 @@
 "use server";
 
 import { auth, db } from "@/firebase/admin";
+import { User } from "@/types";
 import { cookies } from "next/headers";
 
 const EXPIRY_TIME = 60 * 60 * 24 * 7 * 1000; // 1 week
