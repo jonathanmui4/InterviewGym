@@ -1,9 +1,4 @@
-import { CallStatus } from "../Enums";
-
-interface SavedMessage {
-    role: "user" | "system" | "assistant";
-    content: string;
-}
+import { CallStatus, SavedMessage } from "../Enums";
 
 interface AgentState {
     isSpeaking: boolean;
