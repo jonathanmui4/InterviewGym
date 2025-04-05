@@ -5,9 +5,10 @@ import { getRandomInterviewCover } from "@/lib/utils";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import DisplayTechIcons from "./DisplayTechIcons";
-import { Feedback, InterviewCardProps } from "@/types";
+import { InterviewCardProps } from "@/types";
+import { getFeedbackByInterviewId } from "@/lib/actions/general.action";
 
-const InterviewCard = ({
+const InterviewCard = async ({
     id,
     userId,
     role,
@@ -15,7 +16,7 @@ const InterviewCard = ({
     techstack,
     createdAt,
 }: InterviewCardProps) => {
-    const feedback = null as Feedback | null;
+    const feedback = userId && id ? await getFeedbackByInterviewId({ interviewId: id, userId }) : null;
 
     // Basically turns any string that is not "technical" or "behavioural" into mixed
     const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
