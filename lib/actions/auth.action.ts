@@ -98,6 +98,13 @@ export async function signIn(params: SignInParams) {
     }
 }
 
+export async function signOut() {
+    // Retrieve application's cookie management interface
+    const cookieStore = await cookies();
+    // Delete session cookie
+    cookieStore.delete("session");
+}
+
 /**
  * Function takes a Firebase ID token and converts it into a longer-lived session cookie
  * that will be stored in the user's browser.
