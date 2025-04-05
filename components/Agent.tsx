@@ -9,10 +9,12 @@ import { AgentProps } from "@/types";
 import { CallStatus, SavedMessage } from "./Enums";
 import { initialState, AgentReducer } from "./states/AgentReducer";
 import { interviewer } from "@/constants";
+import { createFeedback } from "@/lib/actions/general.action";
 
 const Agent = ({
     userName,
     userId,
+    userImage,
     type,
     interviewId,
     questions,
@@ -67,12 +69,12 @@ const Agent = ({
     const handleGenerateFeedback = async (messages: SavedMessage[]) => {
         console.log("Generate Feedback here");
 
-        const { success, id } = {
-            success: true,
-            id: "feedback-id",
-        };
+        const { success, feedbackId: id } = await createFeedback({
+            interviewId: interviewId!,
+            userId: userId!,
+            transcript: messages,
+        });
 
-        // TODO: Create a server action that generates feedback
         if (success && id) {
             router.push(`/interview/${interviewId}/feedback`);
         } else {
@@ -148,7 +150,7 @@ const Agent = ({
                 <div className="card-border">
                     <div className="card-content">
                         <Image
-                            src="/user-avatar.png"
+                            src={userImage ? userImage : "/user-avatar.png"}
                             alt="user avatar"
                             width={540}
                             height={540}
