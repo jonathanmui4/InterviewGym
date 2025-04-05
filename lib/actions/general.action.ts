@@ -101,7 +101,7 @@ export async function createFeedback(params: CreateFeedbackParams) {
         });
 
         return {
-            sucess: true,
+            success: true,
             feedbackId: feedback.id,
         };
     } catch (error) {
