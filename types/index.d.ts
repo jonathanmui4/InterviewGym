@@ -109,3 +109,8 @@ interface InterviewFormProps {
 interface TechIconProps {
     techStack: string[];
 }
+
+interface NavbarProps {
+    username?: string | null;
+    photo?: string | null;
+}
